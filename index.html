@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scripture Scramble - ThankGod Okoduwa Edition</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #030712 100%);
+            --card-bg: rgba(17, 24, 39, 0.85);
+            --theme-color: #38bdf8;
+            --theme-glow: rgba(56, 189, 248, 0.4);
+            --text-light: #f9fafb;
+            --text-muted: #9ca3af;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 20px 90px 20px;
+            user-select: none;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fixed Bottom Branding Badge with Thick Blinking Cyan Border */
+        .creator-badge-bottom {
+            position: fixed;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 3.5px solid #06b6d4;
+            backdrop-filter: blur(10px);
+            padding: 10px 28px;
+            border-radius: 30px;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 15px;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+            z-index: 100;
+            white-space: nowrap;
+            animation: cyanBlink 1.2s infinite alternate;
+        }
+
+        @keyframes cyanBlink {
+            0% {
+                border-color: #06b6d4;
+                box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+            }
+            100% {
+                border-color: #22d3ee;
+                box-shadow: 0 0 25px rgba(34, 211, 238, 0.9);
+            }
+        }
+
+        /* Animated Top Toast Pop-up */
+        .toast-popup-top {
+            position: fixed;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+            color: #fef08a;
+            padding: 14px 34px;
+            border-radius: 35px;
+            font-weight: 900;
+            font-size: 17px;
+            letter-spacing: 2.0px;
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.6), 0 0 15px rgba(254, 240, 138, 0.4);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 999;
+            pointer-events: none;
+            border: 2px solid #fef08a;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast-popup-top.show {
+            top: 25px;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #facc15 0%, #fb923c 35%, #ec4899 70%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            text-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
+        }
+
+        #scoreboard {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 680px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #d1d5db;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+        }
+
+        .highlight {
+            color: var(--theme-color);
+            transition: color 0.5s ease;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 2px solid var(--theme-color);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--theme-glow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 460px;
+            justify-content: space-between;
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .ref-badge {
+            background-color: rgba(15, 23, 42, 0.8);
+            color: var(--theme-color);
+            border: 1px solid var(--theme-color);
+            padding: 8px 22px;
+            border-radius: 25px;
+            font-weight: 800;
+            font-size: 16px;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+
+        .drop-zone {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            min-height: 130px;
+            width: 100%;
+            background-color: rgba(3, 7, 18, 0.6);
+            border: 2px dashed var(--theme-color);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.error {
+            border-color: var(--danger) !important;
+            background-color: rgba(239, 68, 68, 0.15);
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .correct-reveal {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .correct-reveal-title {
+            color: var(--danger);
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        .correct-reveal-text {
+            color: #38bdf8;
+            font-weight: 700;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .word-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            min-height: 90px;
+        }
+
+        .word-chip {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: #f3f4f6;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .word-chip:hover {
+            transform: translateY(-3px);
+            border-color: var(--theme-color);
+            color: #ffffff;
+        }
+
+        .word-chip.selected {
+            background: var(--theme-color);
+            color: #090d16;
+            font-weight: 800;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .nav-controls, .action-controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn {
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-nav {
+            flex: 1;
+            background: rgba(31, 41, 55, 0.8);
+            color: #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-clear {
+            flex: 1;
+            background-color: #4b5563;
+            color: #ffffff;
+        }
+
+        .btn-check {
+            flex: 2;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+            padding: 25px;
+        }
+
+        .start-btn {
+            margin-top: 25px;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0284c7, #a855f7);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.7);
+/* Responsive tweaks for mobile devices */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px 80px 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+                letter-spacing: 1.5px;
+            }
+
+            #scoreboard {
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+
+            .game-container {
+                padding: 16px;
+                min-height: auto;
+            }
+
+            .toast-popup-top {
+                font-size: 13px;
+                padding: 10px 20px;
+                letter-spacing: 1px;
+                width: 90%;
+                text-align: center;
+            }
+
+            .creator-badge-bottom {
+                font-size: 12px;
+                padding: 8px 18px;
+                letter-spacing: 1px;
+            }
+
+            .word-chip {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .overlay h2 {
+                font-size: 22px !important;
+            }
+
+            .overlay p {
+                font-size: 15px !important;
+            }
+        }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Top Pop-up -->
+    <div id="toast" class="toast-popup-top">✨📜EVANG.THANKGOD OKODUWA📜✨</div>
+
+    <h1>ZIONLIFE SCRIPTURE SCRAMBLE 🧩</h1>
+
+    <div id="scoreboard">
+        <div>SCORE: <span id="score" class="highlight">0</span>/100</div>
+        <div>VERSE: <span id="verse-count" class="highlight">1</span>/50</div>
+        <div>TIME: <span id="timer" class="highlight">30:00</span></div>
+    </div>
+
+    <div id="game-container" class="game-container">
+        <div id="game-overlay" class="overlay">
+            <h2 style="color: #38bdf8; font-size: 28px; margin-bottom: 12px; font-weight: 900;">SCRIPTURE SCRAMBLE📜</h2>
+           <p style="color: #fde047; font-size: 18px; max-width: 480px; line-height: 1.7; text-shadow: 0 0 12px rgba(253, 224, 71, 0.3);">
+    Scramble the KJV verse accurately. Each verse carries <b style="color: #4ade80;">2 MARKS</b>. Note: Clicking <b style="color: #f87171;">CHECK VERSE</b> locks that verse to <b style="color: #f87171;">0 MARKS</b>!
+</p>
+            <button id="start-btn" class="start-btn">START GAME 🚀</button>
+        </div>
+
+        <div id="ref-badge" class="ref-badge">John 3:16</div>
+
+        <div id="drop-zone" class="drop-zone"></div>
+
+        <div id="word-pool" class="word-pool"></div>
+
+        <div class="controls-wrapper">
+            <div class="nav-controls">
+                <button id="prev-btn" class="btn btn-nav">⬅️ PREV</button>
+                <button id="next-btn" class="btn btn-nav">NEXT ➡️</button>
+            </div>
+            <div class="action-controls">
+                <button id="reset-btn" class="btn btn-clear">RESET 🔄</button>
+                <button id="check-btn" class="btn btn-check">CHECK VERSE ✅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Persistent Bottom Branding with Blinking Cyan Border -->
+    <div class="creator-badge-bottom">THANKGOD OKODUWA</div>
+
+    <script>
+        const dropZone = document.getElementById("drop-zone");
+        const wordPool = document.getElementById("word-pool");
+        const refBadge = document.getElementById("ref-badge");
+        const scoreElement = document.getElementById("score");
+        const timerElement = document.getElementById("timer");
+        const verseCountElement = document.getElementById("verse-count");
+        const overlay = document.getElementById("game-overlay");
+        const startBtn = document.getElementById("start-btn");
+        const resetBtn = document.getElementById("reset-btn");
+        const checkBtn = document.getElementById("check-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const toast = document.getElementById("toast");
+
+        const colorThemes = [
+            { primary: "#38bdf8", glow: "rgba(56, 189, 248, 0.4)" },
+            { primary: "#10b981", glow: "rgba(16, 185, 129, 0.4)" },
+            { primary: "#a855f7", glow: "rgba(168, 85, 247, 0.4)" },
+            { primary: "#f59e0b", glow: "rgba(245, 158, 11, 0.4)" },
+            { primary: "#f43f5e", glow: "rgba(244, 63, 94, 0.4)" },
+            { primary: "#6366f1", glow: "rgba(99, 102, 241, 0.4)" }
+        ];
+
+        // Master Dataset updated strictly to King James Version (KJV)
+        const masterVerseList = [
+            { ref: "John 3:16", verse: "For God so loved the world that he gave his only begotten Son" },
+            { ref: "Psalm 23:1", verse: "The Lord is my shepherd I shall not want" },
+            { ref: "Philippians 4:13", verse: "I can do all things through Christ which strengtheneth me" },
+            { ref: "Proverbs 3:5", verse: "Trust in the Lord with all thine heart" },
+            { ref: "Genesis 1:1", verse: "In the beginning God created the heaven and the earth" },
+            { ref: "Matthew 5:14", verse: "Ye are the light of the world" },
+            { ref: "Psalm 119:105", verse: "Thy word is a lamp unto my feet and a light unto my path" },
+            { ref: "1 Thessalonians 5:16", verse: "Rejoice evermore" },
+            { ref: "1 Thessalonians 5:17", verse: "Pray without ceasing" },
+            { ref: "1 Thessalonians 5:18", verse: "In every thing give thanks" },
+            { ref: "1 John 4:19", verse: "We love him because he first loved us" },
+            { ref: "Psalm 46:10", verse: "Be still and know that I am God" },
+            { ref: "Hebrews 13:8", verse: "Jesus Christ the same yesterday and to day and for ever" },
+            { ref: "John 14:6", verse: "I am the way the truth and the life" },
+            { ref: "Matthew 28:20", verse: "Lo I am with you alway even unto the end of the world" },
+            { ref: "Romans 3:23", verse: "For all have sinned and come short of the glory of God" },
+            { ref: "Romans 6:23", verse: "For the wages of sin is death but the gift of God is eternal life" },
+            { ref: "Galatians 5:22", verse: "The fruit of the Spirit is love joy peace longsuffering gentleness goodness faith" },
+            { ref: "Psalm 56:3", verse: "What time I am afraid I will trust in thee" },
+            { ref: "Nehemiah 8:10", verse: "The joy of the Lord is your strength" },
+            { ref: "John 10:11", verse: "I am the good shepherd" },
+            { ref: "John 8:12", verse: "I am the light of the world" },
+            { ref: "Psalm 118:24", verse: "This is the day which the Lord hath made we will rejoice and be glad in it" },
+            { ref: "Ephesians 4:32", verse: "Be ye kind one to another tenderhearted forgiving one another" },
+            { ref: "Colossians 3:23", verse: "And whatsoever ye do do it heartily as to the Lord and not unto men" },
+            { ref: "Matthew 7:7", verse: "Ask and it shall be given you seek and ye shall find" },
+            { ref: "Luke 6:31", verse: "And as ye would that men should do to you do ye also to them likewise" },
+            { ref: "James 1:17", verse: "Every good gift and every perfect gift is from above" },
+            { ref: "1 Corinthians 13:13", verse: "And now abideth faith hope charity these three but the greatest of these is charity" },
+            { ref: "Psalm 100:1", verse: "Make a joyful noise unto the Lord all ye lands" },
+            { ref: "Proverbs 18:10", verse: "The name of the Lord is a strong tower" },
+            { ref: "Isaiah 9:6", verse: "For unto us a child is born unto us a son is given" },
+            { ref: "Romans 8:31", verse: "If God be for us who can be against us" },
+            { ref: "Romans 12:21", verse: "Be not overcome of evil but overcome evil with good" },
+            { ref: "Psalm 19:1", verse: "The heavens declare the glory of God" },
+            { ref: "Matthew 6:33", verse: "But seek ye first the kingdom of God and his righteousness" },
+            { ref: "John 15:5", verse: "I am the vine ye are the branches" },
+            { ref: "Proverbs 15:1", verse: "A soft answer turneth away wrath" },
+            { ref: "1 Peter 5:7", verse: "Casting all your care upon him for he careth for you" },
+            { ref: "Psalm 136:1", verse: "O give thanks unto the Lord for he is good" },
+            { ref: "Philippians 4:4", verse: "Rejoice in the Lord alway and again I say Rejoice" },
+            { ref: "Acts 16:31", verse: "Believe on the Lord Jesus Christ and thou shalt be saved" },
+            { ref: "Psalm 27:1", verse: "The Lord is my light and my salvation whom shall I fear" },
+            { ref: "Matthew 11:28", verse: "Come unto me all ye that labour and are heavy laden and I will give you rest" },
+            { ref: "John 1:1", verse: "In the beginning was the Word and the Word was with God" },
+            { ref: "2 Corinthians 5:7", verse: "For we walk by faith not by sight" },
+            { ref: "Psalm 34:8", verse: "O taste and see that the Lord is good" },
+            { ref: "Proverbs 3:6", verse: "In all thy ways acknowledge him and he shall direct thy paths" },
+            { ref: "Isaiah 40:31", verse: "They that wait upon the Lord shall renew their strength" },
+            { ref: "John 13:34", verse: "A new commandment I give unto you That ye love one another" }
+        ];
+
+        let activeVerseList = [];
+        let currentVerseIndex = 0;
+        let selectedWords = [];
+        let score = 0;
+        let timeLeft = 1800; // 30 minutes
+        let timerInterval = null;
+        
+        let disqualifiedSet = new Set(); 
+        let completedSet = new Set();
+
+        startBtn.addEventListener("click", startGame);
+        resetBtn.addEventListener("click", resetCurrentVerse);
+        checkBtn.addEventListener("click", checkVerse);
+        prevBtn.addEventListener("click", navigatePrev);
+        nextBtn.addEventListener("click", navigateNext);
+
+        // Updated interval trigger: pop-up triggers every 10 seconds (10000 ms)
+        setInterval(() => {
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 2500); // Popup stays visible for 2.5s
+        }, 10000);
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startGame() {
+            score = 0;
+            currentVerseIndex = 0;
+            timeLeft = 1800;
+            disqualifiedSet.clear();
+            completedSet.clear();
+            
+            // Reshuffle all 50 verses at game start
+            activeVerseList = shuffleArray(masterVerseList);
+
+            scoreElement.innerText = score;
+            updateTimerDisplay();
+            overlay.style.display = "none";
+
+            loadVerse();
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    endGame("TIME'S UP! ⏰");
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function applyDynamicTheme() {
+            const theme = colorThemes[currentVerseIndex % colorThemes.length];
+            document.documentElement.style.setProperty('--theme-color', theme.primary);
+            document.documentElement.style.setProperty('--theme-glow', theme.glow);
+        }
+
+        function loadVerse() {
+            applyDynamicTheme();
+            dropZone.innerHTML = "";
+            wordPool.innerHTML = "";
+            selectedWords = [];
+
+            verseCountElement.innerText = currentVerseIndex + 1;
+            const verseObj = activeVerseList[currentVerseIndex];
+            refBadge.innerText = verseObj.ref;
+
+            const words = verseObj.verse.split(" ");
+            const scrambled = shuffleArray(words);
+
+            scrambled.forEach((word) => {
+                const chip = document.createElement("div");
+                chip.className = "word-chip";
+                chip.innerText = word;
+                chip.addEventListener("click", () => selectWord(chip, word));
+                wordPool.appendChild(chip);
+            });
+        }
+
+        function selectWord(chipElement, word) {
+            chipElement.style.display = "none";
+            selectedWords.push({ word, element: chipElement });
+
+            const placedChip = document.createElement("div");
+            placedChip.className = "word-chip selected";
+            placedChip.innerText = word;
+            placedChip.addEventListener("click", () => unselectWord(placedChip, chipElement));
+
+            dropZone.appendChild(placedChip);
+        }
+
+        function unselectWord(placedElement, originalElement) {
+            dropZone.removeChild(placedElement);
+            originalElement.style.display = "block";
+            selectedWords = selectedWords.filter(item => item.element !== originalElement);
+        }
+
+        function resetCurrentVerse() {
+            loadVerse();
+        }
+
+        function navigateNext() {
+            currentVerseIndex = (currentVerseIndex + 1) % activeVerseList.length;
+            loadVerse();
+        }
+
+        function navigatePrev() {
+            currentVerseIndex = (currentVerseIndex - 1 + activeVerseList.length) % activeVerseList.length;
+            loadVerse();
+        }
+
+        function checkVerse() {
+            const builtVerse = selectedWords.map(item => item.word).join(" ");
+            const targetVerse = activeVerseList[currentVerseIndex].verse;
+
+            disqualifiedSet.add(currentVerseIndex);
+
+            if (builtVerse === targetVerse) {
+                dropZone.style.borderColor = "#10b981";
+                if (!completedSet.has(currentVerseIndex)) {
+                    score += 2;
+                    scoreElement.innerText = score;
+                }
+                completedSet.add(currentVerseIndex);
+
+                setTimeout(() => {
+                    currentVerseIndex++;
+                    if (currentVerseIndex >= activeVerseList.length) {
+                        endGame("CONGRATULATIONS! 🎉");
+                    } else {
+                        loadVerse();
+                    }
+                }, 400);
+
+            } else {
+                dropZone.classList.add("error");
+
+                const revealBox = document.createElement("div");
+                revealBox.className = "correct-reveal";
+                revealBox.innerHTML = `
+                    <div class="correct-reveal-title">❌ INCORRECT (0 MARKS FOR THIS VERSE)</div>
+                    <div class="correct-reveal-text">"${targetVerse}"</div>
+                `;
+                dropZone.appendChild(revealBox);
+
+                setTimeout(() => {
+                    dropZone.classList.remove("error");
+                    if(dropZone.contains(revealBox)){
+                        dropZone.removeChild(revealBox);
+                    }
+                }, 2800);
+            }
+        }
+
+        function endGame(titleText) {
+            clearInterval(timerInterval);
+            overlay.style.display = "flex";
+            overlay.querySelector("h2").innerText = titleText;
+            overlay.querySelector("p").innerText = `Final Score: ${score} out of 100 marks! (${completedSet.size} total verses solved)`;
+            startBtn.innerText = "PLAY AGAIN 🔄";
+        }
+    </script>
+</body>
+</html>

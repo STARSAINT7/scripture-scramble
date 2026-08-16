@@ -1,0 +1,7 @@
+Copyright (c) 2026 ThankGod Okoduwa. All Rights Reserved.
+
+This software and its associated source code (HTML, CSS, JavaScript) are the proprietary property of ThankGod Okoduwa. 
+
+1. Permission is granted solely to access, run, and share the live application for personal, non-commercial, and devotional use.
+2. You may NOT copy, modify, distribute, reverse engineer, sublicense, or sell the source code without explicit written permission from the copyright owner.
+3. All visual branding, copyright notices, and author credits must remain intact in all instances of the application.
