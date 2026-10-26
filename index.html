@@ -1,692 +1,124 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scripture Scramble - ThankGod Okoduwa Edition</title>
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #090d16 0%, #111827 50%, #030712 100%);
-            --card-bg: rgba(17, 24, 39, 0.85);
-            --theme-color: #38bdf8;
-            --theme-glow: rgba(56, 189, 248, 0.4);
-            --text-light: #f9fafb;
-            --text-muted: #9ca3af;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: var(--bg-gradient);
-            color: var(--text-light);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 20px 90px 20px;
-            user-select: none;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Fixed Bottom Branding Badge with Thick Blinking Cyan Border */
-        .creator-badge-bottom {
-            position: fixed;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
-            border: 3.5px solid #06b6d4;
-            backdrop-filter: blur(10px);
-            padding: 10px 28px;
-            border-radius: 30px;
-            color: #ffffff;
-            font-weight: 900;
-            font-size: 15px;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
-            z-index: 100;
-            white-space: nowrap;
-            animation: cyanBlink 1.2s infinite alternate;
-        }
-
-        @keyframes cyanBlink {
-            0% {
-                border-color: #06b6d4;
-                box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
-            }
-            100% {
-                border-color: #22d3ee;
-                box-shadow: 0 0 25px rgba(34, 211, 238, 0.9);
-            }
-        }
-
-        /* Animated Top Toast Pop-up */
-        .toast-popup-top {
-            position: fixed;
-            top: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
-            color: #fef08a;
-            padding: 14px 34px;
-            border-radius: 35px;
-            font-weight: 900;
-            font-size: 17px;
-            letter-spacing: 2.0px;
-            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.6), 0 0 15px rgba(254, 240, 138, 0.4);
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 999;
-            pointer-events: none;
-            border: 2px solid #fef08a;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-        }
-
-        .toast-popup-top.show {
-            top: 25px;
-        }
-
-        h1 {
-            margin-bottom: 12px;
-            font-size: 34px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            background: linear-gradient(135deg, #facc15 0%, #fb923c 35%, #ec4899 70%, #38bdf8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            text-shadow: 0 0 25px rgba(250, 204, 21, 0.4);
-        }
-
-        #scoreboard {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 680px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #d1d5db;
-            background: rgba(15, 23, 42, 0.7);
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-        }
-
-        .highlight {
-            color: var(--theme-color);
-            transition: color 0.5s ease;
-        }
-
-        .game-container {
-            width: 100%;
-            max-width: 680px;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 2px solid var(--theme-color);
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px var(--theme-glow);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 460px;
-            justify-content: space-between;
-            transition: border-color 0.5s ease, box-shadow 0.5s ease;
-        }
-
-        .ref-badge {
-            background-color: rgba(15, 23, 42, 0.8);
-            color: var(--theme-color);
-            border: 1px solid var(--theme-color);
-            padding: 8px 22px;
-            border-radius: 25px;
-            font-weight: 800;
-            font-size: 16px;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            transition: all 0.5s ease;
-        }
-
-        .drop-zone {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            align-items: center;
-            min-height: 130px;
-            width: 100%;
-            background-color: rgba(3, 7, 18, 0.6);
-            border: 2px dashed var(--theme-color);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .drop-zone.error {
-            border-color: var(--danger) !important;
-            background-color: rgba(239, 68, 68, 0.15);
-            animation: shake 0.4s ease-in-out;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-
-        .correct-reveal {
-            position: absolute;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.95);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            text-align: center;
-            z-index: 5;
-        }
-
-        .correct-reveal-title {
-            color: var(--danger);
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-
-        .correct-reveal-text {
-            color: #38bdf8;
-            font-weight: 700;
-            font-size: 16px;
-            line-height: 1.4;
-        }
-
-        .word-pool {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-            width: 100%;
-            min-height: 90px;
-        }
-
-        .word-chip {
-            background: linear-gradient(135deg, #1f2937, #374151);
-            color: #f3f4f6;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .word-chip:hover {
-            transform: translateY(-3px);
-            border-color: var(--theme-color);
-            color: #ffffff;
-        }
-
-        .word-chip.selected {
-            background: var(--theme-color);
-            color: #090d16;
-            font-weight: 800;
-        }
-
-        .controls-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .nav-controls, .action-controls {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-
-        .btn {
-            padding: 12px;
-            font-size: 14px;
-            font-weight: 800;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-nav {
-            flex: 1;
-            background: rgba(31, 41, 55, 0.8);
-            color: #e5e7eb;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-clear {
-            flex: 1;
-            background-color: #4b5563;
-            color: #ffffff;
-        }
-
-        .btn-check {
-            flex: 2;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
-
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(3, 7, 18, 0.95);
-            backdrop-filter: blur(12px);
-            border-radius: 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 10;
-            padding: 25px;
-        }
-
-        .start-btn {
-            margin-top: 25px;
-            padding: 14px 40px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #ffffff;
-            background: linear-gradient(135deg, #0284c7, #a855f7);
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(168, 85, 247, 0.5);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .start-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.7);
-/* Responsive tweaks for mobile devices */
-        @media (max-width: 600px) {
-            body {
-                padding: 15px 10px 80px 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-                letter-spacing: 1.5px;
-            }
-
-            #scoreboard {
-                font-size: 14px;
-                padding: 10px 14px;
-            }
-
-            .game-container {
-                padding: 16px;
-                min-height: auto;
-            }
-
-            .toast-popup-top {
-                font-size: 13px;
-                padding: 10px 20px;
-                letter-spacing: 1px;
-                width: 90%;
-                text-align: center;
-            }
-
-            .creator-badge-bottom {
-                font-size: 12px;
-                padding: 8px 18px;
-                letter-spacing: 1px;
-            }
-
-            .word-chip {
-                padding: 8px 14px;
-                font-size: 13px;
-            }
-
-            .btn {
-                padding: 10px;
-                font-size: 12px;
-            }
-
-            .overlay h2 {
-                font-size: 22px !important;
-            }
-
-            .overlay p {
-                font-size: 15px !important;
-            }
-        }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scripture Scramble - ZIONLIFE</title>
+<style>
+:root{--wine:#3a0c17;--wine2:#6d1426;--gold:#c9a227;--gold-d:#9a7714;--ivory:#f7f0dc;--paper:#efe3c2;--ink:#2b1b14;--ok:#2f6b3a;--bad:#9b1c1c}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{background:radial-gradient(ellipse at top,#5a1424 0%,var(--wine) 60%,#220509 100%) fixed;color:var(--ivory);font-family:Georgia,'Palatino Linotype','Book Antiqua',serif;display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+.wrap{width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px;flex:1}
+header{text-align:center}
+h1{font-size:clamp(20px,6vw,32px);font-weight:700;letter-spacing:.06em;color:#e8c96a}
+.sub{font-style:italic;font-size:clamp(13px,3.6vw,15px);color:#d9c9a0;margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--gold-d);border-radius:8px;background:rgba(0,0,0,.25);overflow:hidden}
+.stats div{padding:7px 4px;text-align:center;font-size:clamp(11px,3vw,13px);color:#d9c9a0;border-right:1px solid rgba(201,162,39,.3)}
+.stats div:last-child{border:0}
+.stats b{display:block;font-size:clamp(15px,4.4vw,19px);color:#f3dc8c;font-weight:700}
+.bar{height:6px;background:rgba(0,0,0,.35);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-d),#e8c96a);transition:width .3s}
+.card{position:relative;flex:1;min-height:430px;background:var(--ivory);color:var(--ink);border:3px double var(--gold-d);border-radius:12px;padding:clamp(12px,4vw,22px);display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.ref{align-self:center;font-size:clamp(16px,4.6vw,20px);font-weight:700;color:var(--wine2);font-variant:small-caps;letter-spacing:.05em;border-bottom:2px solid var(--gold);padding:0 10px 3px;text-align:center}
+.zone,.pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start}
+.zone{min-height:128px;padding:12px;border:2px dashed var(--gold-d);border-radius:10px;background:#fbf7e9;position:relative}
+.zone:empty::before{content:"Tap the words in the right order";color:#8a7b5a;font-style:italic;font-size:15px;align-self:center;text-align:center}
+.zone.shake{animation:sh .4s}
+@keyframes sh{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.pool{min-height:84px}
+.chip{font:inherit;font-size:clamp(15px,4.2vw,17px);min-height:44px;padding:8px 14px;border-radius:8px;border:1px solid var(--gold-d);background:var(--paper);color:var(--ink);cursor:pointer;box-shadow:0 2px 0 var(--gold-d);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.chip:active{transform:translateY(2px);box-shadow:none}
+.chip.on{background:var(--wine2);color:var(--ivory);border-color:var(--wine);box-shadow:0 2px 0 var(--wine)}
+.result{width:100%;text-align:center;line-height:1.55;font-size:clamp(16px,4.4vw,19px)}
+.result small{display:block;font-weight:700;margin-bottom:6px;font-size:14px}
+.result.s small{color:var(--ok)}.result.f small{color:var(--bad)}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.btn{font:inherit;font-weight:700;font-size:clamp(14px,3.8vw,16px);min-height:48px;padding:10px;border-radius:8px;border:2px solid var(--wine2);background:transparent;color:var(--wine2);cursor:pointer;touch-action:manipulation}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.main{background:var(--wine2);color:#f3dc8c;grid-column:1/-1}
+.btn.gold{background:var(--gold);border-color:var(--gold-d);color:var(--wine)}
+.ov{position:absolute;inset:0;background:var(--ivory);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:20px;overflow:auto;z-index:5}
+.ov h2{color:var(--wine2);font-size:clamp(22px,6.5vw,30px)}
+.ov p{line-height:1.6;font-size:clamp(15px,4vw,17px);max-width:440px}
+.ov .btn{width:100%;max-width:320px}
+.rule{width:80px;border-top:2px solid var(--gold)}
+footer{text-align:center;font-size:12px;letter-spacing:.08em;color:#c9b27a}
+@media(max-width:380px){.stats div{padding:6px 2px}.chip{padding:8px 11px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-
-    <!-- Animated Top Pop-up -->
-    <div id="toast" class="toast-popup-top">✨📜EVANG.THANKGOD OKODUWA📜✨</div>
-
-    <h1>ZIONLIFE SCRIPTURE SCRAMBLE 🧩</h1>
-
-    <div id="scoreboard">
-        <div>SCORE: <span id="score" class="highlight">0</span>/100</div>
-        <div>VERSE: <span id="verse-count" class="highlight">1</span>/50</div>
-        <div>TIME: <span id="timer" class="highlight">30:00</span></div>
-    </div>
-
-    <div id="game-container" class="game-container">
-        <div id="game-overlay" class="overlay">
-            <h2 style="color: #38bdf8; font-size: 28px; margin-bottom: 12px; font-weight: 900;">SCRIPTURE SCRAMBLE📜</h2>
-           <p style="color: #fde047; font-size: 18px; max-width: 480px; line-height: 1.7; text-shadow: 0 0 12px rgba(253, 224, 71, 0.3);">
-    Scramble the KJV verse accurately. Each verse carries <b style="color: #4ade80;">2 MARKS</b>. Note: Clicking <b style="color: #f87171;">CHECK VERSE</b> locks that verse to <b style="color: #f87171;">0 MARKS</b>!
-</p>
-            <button id="start-btn" class="start-btn">START GAME 🚀</button>
-        </div>
-
-        <div id="ref-badge" class="ref-badge">John 3:16</div>
-
-        <div id="drop-zone" class="drop-zone"></div>
-
-        <div id="word-pool" class="word-pool"></div>
-
-        <div class="controls-wrapper">
-            <div class="nav-controls">
-                <button id="prev-btn" class="btn btn-nav">⬅️ PREV</button>
-                <button id="next-btn" class="btn btn-nav">NEXT ➡️</button>
-            </div>
-            <div class="action-controls">
-                <button id="reset-btn" class="btn btn-clear">RESET 🔄</button>
-                <button id="check-btn" class="btn btn-check">CHECK VERSE ✅</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Persistent Bottom Branding with Blinking Cyan Border -->
-    <div class="creator-badge-bottom">THANKGOD OKODUWA</div>
-
-    <script>
-        const dropZone = document.getElementById("drop-zone");
-        const wordPool = document.getElementById("word-pool");
-        const refBadge = document.getElementById("ref-badge");
-        const scoreElement = document.getElementById("score");
-        const timerElement = document.getElementById("timer");
-        const verseCountElement = document.getElementById("verse-count");
-        const overlay = document.getElementById("game-overlay");
-        const startBtn = document.getElementById("start-btn");
-        const resetBtn = document.getElementById("reset-btn");
-        const checkBtn = document.getElementById("check-btn");
-        const prevBtn = document.getElementById("prev-btn");
-        const nextBtn = document.getElementById("next-btn");
-        const toast = document.getElementById("toast");
-
-        const colorThemes = [
-            { primary: "#38bdf8", glow: "rgba(56, 189, 248, 0.4)" },
-            { primary: "#10b981", glow: "rgba(16, 185, 129, 0.4)" },
-            { primary: "#a855f7", glow: "rgba(168, 85, 247, 0.4)" },
-            { primary: "#f59e0b", glow: "rgba(245, 158, 11, 0.4)" },
-            { primary: "#f43f5e", glow: "rgba(244, 63, 94, 0.4)" },
-            { primary: "#6366f1", glow: "rgba(99, 102, 241, 0.4)" }
-        ];
-
-        // Master Dataset updated strictly to King James Version (KJV)
-        const masterVerseList = [
-            { ref: "John 3:16", verse: "For God so loved the world that he gave his only begotten Son" },
-            { ref: "Psalm 23:1", verse: "The Lord is my shepherd I shall not want" },
-            { ref: "Philippians 4:13", verse: "I can do all things through Christ which strengtheneth me" },
-            { ref: "Proverbs 3:5", verse: "Trust in the Lord with all thine heart" },
-            { ref: "Genesis 1:1", verse: "In the beginning God created the heaven and the earth" },
-            { ref: "Matthew 5:14", verse: "Ye are the light of the world" },
-            { ref: "Psalm 119:105", verse: "Thy word is a lamp unto my feet and a light unto my path" },
-            { ref: "1 Thessalonians 5:16", verse: "Rejoice evermore" },
-            { ref: "1 Thessalonians 5:17", verse: "Pray without ceasing" },
-            { ref: "1 Thessalonians 5:18", verse: "In every thing give thanks" },
-            { ref: "1 John 4:19", verse: "We love him because he first loved us" },
-            { ref: "Psalm 46:10", verse: "Be still and know that I am God" },
-            { ref: "Hebrews 13:8", verse: "Jesus Christ the same yesterday and to day and for ever" },
-            { ref: "John 14:6", verse: "I am the way the truth and the life" },
-            { ref: "Matthew 28:20", verse: "Lo I am with you alway even unto the end of the world" },
-            { ref: "Romans 3:23", verse: "For all have sinned and come short of the glory of God" },
-            { ref: "Romans 6:23", verse: "For the wages of sin is death but the gift of God is eternal life" },
-            { ref: "Galatians 5:22", verse: "The fruit of the Spirit is love joy peace longsuffering gentleness goodness faith" },
-            { ref: "Psalm 56:3", verse: "What time I am afraid I will trust in thee" },
-            { ref: "Nehemiah 8:10", verse: "The joy of the Lord is your strength" },
-            { ref: "John 10:11", verse: "I am the good shepherd" },
-            { ref: "John 8:12", verse: "I am the light of the world" },
-            { ref: "Psalm 118:24", verse: "This is the day which the Lord hath made we will rejoice and be glad in it" },
-            { ref: "Ephesians 4:32", verse: "Be ye kind one to another tenderhearted forgiving one another" },
-            { ref: "Colossians 3:23", verse: "And whatsoever ye do do it heartily as to the Lord and not unto men" },
-            { ref: "Matthew 7:7", verse: "Ask and it shall be given you seek and ye shall find" },
-            { ref: "Luke 6:31", verse: "And as ye would that men should do to you do ye also to them likewise" },
-            { ref: "James 1:17", verse: "Every good gift and every perfect gift is from above" },
-            { ref: "1 Corinthians 13:13", verse: "And now abideth faith hope charity these three but the greatest of these is charity" },
-            { ref: "Psalm 100:1", verse: "Make a joyful noise unto the Lord all ye lands" },
-            { ref: "Proverbs 18:10", verse: "The name of the Lord is a strong tower" },
-            { ref: "Isaiah 9:6", verse: "For unto us a child is born unto us a son is given" },
-            { ref: "Romans 8:31", verse: "If God be for us who can be against us" },
-            { ref: "Romans 12:21", verse: "Be not overcome of evil but overcome evil with good" },
-            { ref: "Psalm 19:1", verse: "The heavens declare the glory of God" },
-            { ref: "Matthew 6:33", verse: "But seek ye first the kingdom of God and his righteousness" },
-            { ref: "John 15:5", verse: "I am the vine ye are the branches" },
-            { ref: "Proverbs 15:1", verse: "A soft answer turneth away wrath" },
-            { ref: "1 Peter 5:7", verse: "Casting all your care upon him for he careth for you" },
-            { ref: "Psalm 136:1", verse: "O give thanks unto the Lord for he is good" },
-            { ref: "Philippians 4:4", verse: "Rejoice in the Lord alway and again I say Rejoice" },
-            { ref: "Acts 16:31", verse: "Believe on the Lord Jesus Christ and thou shalt be saved" },
-            { ref: "Psalm 27:1", verse: "The Lord is my light and my salvation whom shall I fear" },
-            { ref: "Matthew 11:28", verse: "Come unto me all ye that labour and are heavy laden and I will give you rest" },
-            { ref: "John 1:1", verse: "In the beginning was the Word and the Word was with God" },
-            { ref: "2 Corinthians 5:7", verse: "For we walk by faith not by sight" },
-            { ref: "Psalm 34:8", verse: "O taste and see that the Lord is good" },
-            { ref: "Proverbs 3:6", verse: "In all thy ways acknowledge him and he shall direct thy paths" },
-            { ref: "Isaiah 40:31", verse: "They that wait upon the Lord shall renew their strength" },
-            { ref: "John 13:34", verse: "A new commandment I give unto you That ye love one another" }
-        ];
-
-        let activeVerseList = [];
-        let currentVerseIndex = 0;
-        let selectedWords = [];
-        let score = 0;
-        let timeLeft = 1800; // 30 minutes
-        let timerInterval = null;
-        
-        let disqualifiedSet = new Set(); 
-        let completedSet = new Set();
-
-        startBtn.addEventListener("click", startGame);
-        resetBtn.addEventListener("click", resetCurrentVerse);
-        checkBtn.addEventListener("click", checkVerse);
-        prevBtn.addEventListener("click", navigatePrev);
-        nextBtn.addEventListener("click", navigateNext);
-
-        // Updated interval trigger: pop-up triggers every 10 seconds (10000 ms)
-        setInterval(() => {
-            toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 2500); // Popup stays visible for 2.5s
-        }, 10000);
-
-        function shuffleArray(array) {
-            let arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function startGame() {
-            score = 0;
-            currentVerseIndex = 0;
-            timeLeft = 1800;
-            disqualifiedSet.clear();
-            completedSet.clear();
-            
-            // Reshuffle all 50 verses at game start
-            activeVerseList = shuffleArray(masterVerseList);
-
-            scoreElement.innerText = score;
-            updateTimerDisplay();
-            overlay.style.display = "none";
-
-            loadVerse();
-
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    endGame("TIME'S UP! ⏰");
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            timerElement.innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-        }
-
-        function applyDynamicTheme() {
-            const theme = colorThemes[currentVerseIndex % colorThemes.length];
-            document.documentElement.style.setProperty('--theme-color', theme.primary);
-            document.documentElement.style.setProperty('--theme-glow', theme.glow);
-        }
-
-        function loadVerse() {
-            applyDynamicTheme();
-            dropZone.innerHTML = "";
-            wordPool.innerHTML = "";
-            selectedWords = [];
-
-            verseCountElement.innerText = currentVerseIndex + 1;
-            const verseObj = activeVerseList[currentVerseIndex];
-            refBadge.innerText = verseObj.ref;
-
-            const words = verseObj.verse.split(" ");
-            const scrambled = shuffleArray(words);
-
-            scrambled.forEach((word) => {
-                const chip = document.createElement("div");
-                chip.className = "word-chip";
-                chip.innerText = word;
-                chip.addEventListener("click", () => selectWord(chip, word));
-                wordPool.appendChild(chip);
-            });
-        }
-
-        function selectWord(chipElement, word) {
-            chipElement.style.display = "none";
-            selectedWords.push({ word, element: chipElement });
-
-            const placedChip = document.createElement("div");
-            placedChip.className = "word-chip selected";
-            placedChip.innerText = word;
-            placedChip.addEventListener("click", () => unselectWord(placedChip, chipElement));
-
-            dropZone.appendChild(placedChip);
-        }
-
-        function unselectWord(placedElement, originalElement) {
-            dropZone.removeChild(placedElement);
-            originalElement.style.display = "block";
-            selectedWords = selectedWords.filter(item => item.element !== originalElement);
-        }
-
-        function resetCurrentVerse() {
-            loadVerse();
-        }
-
-        function navigateNext() {
-            currentVerseIndex = (currentVerseIndex + 1) % activeVerseList.length;
-            loadVerse();
-        }
-
-        function navigatePrev() {
-            currentVerseIndex = (currentVerseIndex - 1 + activeVerseList.length) % activeVerseList.length;
-            loadVerse();
-        }
-
-        function checkVerse() {
-            const builtVerse = selectedWords.map(item => item.word).join(" ");
-            const targetVerse = activeVerseList[currentVerseIndex].verse;
-
-            disqualifiedSet.add(currentVerseIndex);
-
-            if (builtVerse === targetVerse) {
-                dropZone.style.borderColor = "#10b981";
-                if (!completedSet.has(currentVerseIndex)) {
-                    score += 2;
-                    scoreElement.innerText = score;
-                }
-                completedSet.add(currentVerseIndex);
-
-                setTimeout(() => {
-                    currentVerseIndex++;
-                    if (currentVerseIndex >= activeVerseList.length) {
-                        endGame("CONGRATULATIONS! 🎉");
-                    } else {
-                        loadVerse();
-                    }
-                }, 400);
-
-            } else {
-                dropZone.classList.add("error");
-
-                const revealBox = document.createElement("div");
-                revealBox.className = "correct-reveal";
-                revealBox.innerHTML = `
-                    <div class="correct-reveal-title">❌ INCORRECT (0 MARKS FOR THIS VERSE)</div>
-                    <div class="correct-reveal-text">"${targetVerse}"</div>
-                `;
-                dropZone.appendChild(revealBox);
-
-                setTimeout(() => {
-                    dropZone.classList.remove("error");
-                    if(dropZone.contains(revealBox)){
-                        dropZone.removeChild(revealBox);
-                    }
-                }, 2800);
-            }
-        }
-
-        function endGame(titleText) {
-            clearInterval(timerInterval);
-            overlay.style.display = "flex";
-            overlay.querySelector("h2").innerText = titleText;
-            overlay.querySelector("p").innerText = `Final Score: ${score} out of 100 marks! (${completedSet.size} total verses solved)`;
-            startBtn.innerText = "PLAY AGAIN 🔄";
-        }
-    </script>
+<div class="wrap">
+<header><h1>ZIONLIFE SCRIPTURE SCRAMBLE</h1><div class="sub" id="stage-label">King James Version</div></header>
+<div class="stats">
+<div>Score<b><span id="score">0</span>/100</b></div>
+<div>Stage<b id="stage">1</b></div>
+<div>Verse<b><span id="vc">1</span>/50</b></div>
+<div>Time<b id="timer">20:00</b></div>
+</div>
+<div class="bar"><i id="bar"></i></div>
+<main class="card">
+<div id="ov" class="ov"></div>
+<div class="ref" id="ref">John 3:16</div>
+<div class="zone" id="zone"></div>
+<div class="pool" id="pool"></div>
+<div class="ctl">
+<button class="btn" id="prev">‹ Previous</button><button class="btn" id="next">Next ›</button>
+<button class="btn" id="undo">Undo</button><button class="btn" id="reset">Reset</button>
+<button class="btn main" id="check">Check Verse</button>
+</div>
+</main>
+<footer>EVANG. THANKGOD OKODUWA · ZIONLIFE</footer>
+</div>
+<script>
+const $=i=>document.getElementById(i);
+const S1=[["John 3:16","For God so loved the world that he gave his only begotten Son"],["Psalm 23:1","The Lord is my shepherd I shall not want"],["Philippians 4:13","I can do all things through Christ which strengtheneth me"],["Proverbs 3:5","Trust in the Lord with all thine heart"],["Genesis 1:1","In the beginning God created the heaven and the earth"],["Matthew 5:14","Ye are the light of the world"],["Psalm 119:105","Thy word is a lamp unto my feet and a light unto my path"],["1 Thessalonians 5:16","Rejoice evermore"],["1 Thessalonians 5:17","Pray without ceasing"],["1 Thessalonians 5:18","In every thing give thanks"],["1 John 4:19","We love him because he first loved us"],["Psalm 46:10","Be still and know that I am God"],["Hebrews 13:8","Jesus Christ the same yesterday and to day and for ever"],["John 14:6","I am the way the truth and the life"],["Matthew 28:20","Lo I am with you alway even unto the end of the world"],["Romans 3:23","For all have sinned and come short of the glory of God"],["Romans 6:23","For the wages of sin is death but the gift of God is eternal life"],["Galatians 5:22","The fruit of the Spirit is love joy peace longsuffering gentleness goodness faith"],["Psalm 56:3","What time I am afraid I will trust in thee"],["Nehemiah 8:10","The joy of the Lord is your strength"],["John 10:11","I am the good shepherd"],["John 8:12","I am the light of the world"],["Psalm 118:24","This is the day which the Lord hath made we will rejoice and be glad in it"],["Ephesians 4:32","Be ye kind one to another tenderhearted forgiving one another"],["Colossians 3:23","And whatsoever ye do do it heartily as to the Lord and not unto men"],["Matthew 7:7","Ask and it shall be given you seek and ye shall find"],["Luke 6:31","And as ye would that men should do to you do ye also to them likewise"],["James 1:17","Every good gift and every perfect gift is from above"],["1 Corinthians 13:13","And now abideth faith hope charity these three but the greatest of these is charity"],["Psalm 100:1","Make a joyful noise unto the Lord all ye lands"],["Proverbs 18:10","The name of the Lord is a strong tower"],["Isaiah 9:6","For unto us a child is born unto us a son is given"],["Romans 8:31","If God be for us who can be against us"],["Romans 12:21","Be not overcome of evil but overcome evil with good"],["Psalm 19:1","The heavens declare the glory of God"],["Matthew 6:33","But seek ye first the kingdom of God and his righteousness"],["John 15:5","I am the vine ye are the branches"],["Proverbs 15:1","A soft answer turneth away wrath"],["1 Peter 5:7","Casting all your care upon him for he careth for you"],["Psalm 136:1","O give thanks unto the Lord for he is good"],["Philippians 4:4","Rejoice in the Lord alway and again I say Rejoice"],["Acts 16:31","Believe on the Lord Jesus Christ and thou shalt be saved"],["Psalm 27:1","The Lord is my light and my salvation whom shall I fear"],["Matthew 11:28","Come unto me all ye that labour and are heavy laden and I will give you rest"],["John 1:1","In the beginning was the Word and the Word was with God"],["2 Corinthians 5:7","For we walk by faith not by sight"],["Psalm 34:8","O taste and see that the Lord is good"],["Proverbs 3:6","In all thy ways acknowledge him and he shall direct thy paths"],["Isaiah 40:31","They that wait upon the Lord shall renew their strength"],["John 13:34","A new commandment I give unto you That ye love one another"]];
+const S2=[["Genesis 1:27","So God created man in his own image in the image of God created he him male and female created he them"],["Joshua 1:9","Have not I commanded thee Be strong and of a good courage be not afraid neither be thou dismayed for the Lord thy God is with thee whithersoever thou goest"],["Deuteronomy 31:6","Be strong and of a good courage fear not nor be afraid of them for the Lord thy God he it is that doth go with thee he will not fail thee nor forsake thee"],["Psalm 1:3","And he shall be like a tree planted by the rivers of water that bringeth forth his fruit in his season his leaf also shall not wither and whatsoever he doeth shall prosper"],["Psalm 23:4","Yea though I walk through the valley of the shadow of death I will fear no evil for thou art with me thy rod and thy staff they comfort me"],["Psalm 23:6","Surely goodness and mercy shall follow me all the days of my life and I will dwell in the house of the Lord for ever"],["2 Chronicles 7:14","If my people which are called by my name shall humble themselves and pray and seek my face and turn from their wicked ways then will I hear from heaven and will forgive their sin and will heal their land"],["Revelation 21:4","And God shall wipe away all tears from their eyes and there shall be no more death neither sorrow nor crying neither shall there be any more pain for the former things are passed away"],["Psalm 91:1","He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty"],["Psalm 91:11","For he shall give his angels charge over thee to keep thee in all thy ways"],["Psalm 121:1-2","I will lift up mine eyes unto the hills from whence cometh my help My help cometh from the Lord which made heaven and earth"],["Psalm 139:14","I will praise thee for I am fearfully and wonderfully made marvellous are thy works and that my soul knoweth right well"],["1 John 1:9","If we confess our sins he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness"],["Psalm 34:19","Many are the afflictions of the righteous but the Lord delivereth him out of them all"],["Psalm 16:11","Thou wilt shew me the path of life in thy presence is fulness of joy at thy right hand there are pleasures for evermore"],["Proverbs 22:6","Train up a child in the way he should go and when he is old he will not depart from it"],["Proverbs 4:23","Keep thy heart with all diligence for out of it are the issues of life"],["Revelation 3:20","Behold I stand at the door and knock if any man hear my voice and open the door I will come in to him and will sup with him and he with me"],["Isaiah 41:10","Fear thou not for I am with thee be not dismayed for I am thy God I will strengthen thee yea I will help thee yea I will uphold thee with the right hand of my righteousness"],["Isaiah 53:5","But he was wounded for our transgressions he was bruised for our iniquities the chastisement of our peace was upon him and with his stripes we are healed"],["Isaiah 26:3","Thou wilt keep him in perfect peace whose mind is stayed on thee because he trusteth in thee"],["Isaiah 55:8","For my thoughts are not your thoughts neither are your ways my ways saith the Lord"],["Jeremiah 29:11","For I know the thoughts that I think toward you saith the Lord thoughts of peace and not of evil to give you an expected end"],["Jeremiah 33:3","Call unto me and I will answer thee and shew thee great and mighty things which thou knowest not"],["Lamentations 3:22-23","It is of the Lord's mercies that we are not consumed because his compassions fail not They are new every morning great is thy faithfulness"],["Micah 6:8","He hath shewed thee O man what is good and what doth the Lord require of thee but to do justly and to love mercy and to walk humbly with thy God"],["Zephaniah 3:17","The Lord thy God in the midst of thee is mighty he will save he will rejoice over thee with joy he will rest in his love he will joy over thee with singing"],["Matthew 5:16","Let your light so shine before men that they may see your good works and glorify your Father which is in heaven"],["Matthew 6:9-10","Our Father which art in heaven Hallowed be thy name Thy kingdom come Thy will be done in earth as it is in heaven"],["Matthew 19:26","But Jesus beheld them and said unto them With men this is impossible but with God all things are possible"],["Matthew 22:37","Jesus said unto him Thou shalt love the Lord thy God with all thy heart and with all thy soul and with all thy mind"],["Matthew 28:19","Go ye therefore and teach all nations baptizing them in the name of the Father and of the Son and of the Holy Ghost"],["Mark 11:24","Therefore I say unto you What things soever ye desire when ye pray believe that ye receive them and ye shall have them"],["Luke 2:10","And the angel said unto them Fear not for behold I bring you good tidings of great joy which shall be to all people"],["John 3:17","For God sent not his Son into the world to condemn the world but that the world through him might be saved"],["John 14:27","Peace I leave with you my peace I give unto you not as the world giveth give I unto you Let not your heart be troubled neither let it be afraid"],["John 15:13","Greater love hath no man than this that a man lay down his life for his friends"],["John 16:33","These things I have spoken unto you that in me ye might have peace In the world ye shall have tribulation but be of good cheer I have overcome the world"],["John 10:10","The thief cometh not but for to steal and to kill and to destroy I am come that they might have life and that they might have it more abundantly"],["John 11:25","Jesus said unto her I am the resurrection and the life he that believeth in me though he were dead yet shall he live"],["Acts 1:8","But ye shall receive power after that the Holy Ghost is come upon you and ye shall be witnesses unto me both in Jerusalem and in all Judaea and in Samaria and unto the uttermost part of the earth"],["Romans 8:28","And we know that all things work together for good to them that love God to them who are the called according to his purpose"],["Romans 10:9","That if thou shalt confess with thy mouth the Lord Jesus and shalt believe in thine heart that God hath raised him from the dead thou shalt be saved"],["Romans 12:2","And be not conformed to this world but be ye transformed by the renewing of your mind that ye may prove what is that good and acceptable and perfect will of God"],["2 Corinthians 5:17","Therefore if any man be in Christ he is a new creature old things are passed away behold all things are become new"],["Ephesians 2:8-9","For by grace are ye saved through faith and that not of yourselves it is the gift of God Not of works lest any man should boast"],["Ephesians 6:11","Put on the whole armour of God that ye may be able to stand against the wiles of the devil"],["Philippians 4:6-7","Be careful for nothing but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God And the peace of God which passeth all understanding shall keep your hearts and minds through Christ Jesus"],["Hebrews 4:16","Let us therefore come boldly unto the throne of grace that we may obtain mercy and find grace to help in time of need"],["James 1:5","If any of you lack wisdom let him ask of God that giveth to all men liberally and upbraideth not and it shall be given him"]];
+const DECOYS=["wherefore","behold","hath","thereof","whosoever","saith","lest","verily","henceforth","amongst","therefore","yea"];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let stage=1,list=[],status=[],vs=[],idx=0,score=0,left=0,tick=null,adv=null,results={};
+const pad=n=>(n<10?"0":"")+n;
+function showOv(title,body,btns){const o=$("ov");o.innerHTML="";o.style.display="flex";
+ const h=document.createElement("h2");h.textContent=title;const r=document.createElement("div");r.className="rule";const p=document.createElement("p");p.innerHTML=body;
+ o.append(h,r,p);btns.forEach(([t,f,c])=>{const b=document.createElement("button");b.className="btn "+(c||"");b.textContent=t;b.onclick=f;o.append(b)})}
+function intro(){showOv("Scripture Scramble","Put each KJV verse in the right order. A correct check earns <b>2 marks</b>. A wrong check reveals the verse and scores <b>0</b> for it.<br><br><b>Stage 1:</b> 50 verses, 20 minutes.<br><b>Stage 2:</b> 50 longer verses with extra decoy words, 30 minutes.",[["Begin Stage 1",()=>start(1),"main"],["Go to Stage 2",()=>start(2),"gold"]])}
+function start(n){stage=n;list=shuf(n==1?S1:S2);status=list.map(()=>"p");vs=[];idx=0;score=0;left=n==1?1200:1800;
+ $("ov").style.display="none";$("stage").textContent=n;$("stage-label").textContent=n==1?"Stage 1 · King James Version":"Stage 2 · Tougher verses and decoy words";
+ clearInterval(tick);timer();tick=setInterval(()=>{left--;timer();if(left<=0)finish("Time's up")},1000);render()}
+function timer(){const t=$("timer");t.textContent=Math.floor(left/60)+":"+pad(left%60);t.style.color=left<60?"#ff9a8a":""}
+function getVS(i){if(!vs[i]){const w=list[i][1].split(" ");let all=w.map((x,k)=>({id:k,w:x}));
+ if(stage==2){const have=w.map(x=>x.toLowerCase());shuf(DECOYS).filter(d=>!have.includes(d)).slice(0,3).forEach((d,k)=>all.push({id:w.length+k,w:d}))}
+ let s=shuf(all);vs[i]={chips:s,placed:[]}}return vs[i]}
+function chip(c,on){const b=document.createElement("button");b.className="chip"+(on?" on":"");b.textContent=c.w;b.onclick=()=>{const v=getVS(idx);if(on)v.placed=v.placed.filter(x=>x!==c.id);else v.placed.push(c.id);render()};return b}
+function render(){const [ref,text]=list[idx],v=getVS(idx),st=status[idx],z=$("zone"),p=$("pool");
+ $("ref").textContent=ref;$("vc").textContent=idx+1;$("score").textContent=score;
+ $("bar").style.width=status.filter(s=>s!="p").length/list.length*100+"%";
+ z.innerHTML="";p.innerHTML="";
+ ["undo","reset","check"].forEach(i=>$(i).disabled=st!="p");
+ if(st!="p"){const d=document.createElement("div");d.className="result "+st;const s=document.createElement("small");s.textContent=st=="s"?"Correct · 2 marks":"Incorrect · 0 marks for this verse";d.append(s,document.createTextNode(text));z.append(d);return}
+ v.placed.forEach(id=>z.append(chip(v.chips.find(c=>c.id==id),true)));
+ v.chips.filter(c=>!v.placed.includes(c.id)).forEach(c=>p.append(chip(c,false)))}
+function go(d){clearTimeout(adv);idx=(idx+d+list.length)%list.length;render()}
+function next(){for(let i=1;i<=list.length;i++){const j=(idx+i)%list.length;if(status[j]=="p"){idx=j;render();return}}finish("Stage complete")}
+function check(){if(status[idx]!="p")return;const v=getVS(idx),z=$("zone");
+ if(!v.placed.length){z.classList.add("shake");setTimeout(()=>z.classList.remove("shake"),400);return}
+ const built=v.placed.map(id=>v.chips.find(c=>c.id==id).w).join(" ");
+ if(built==list[idx][1]){status[idx]="s";score+=2;render();adv=setTimeout(next,900)}
+ else{status[idx]="f";render();adv=setTimeout(next,3500)}}
+function finish(title){clearInterval(tick);clearTimeout(adv);const ok=status.filter(s=>s=="s").length;results[stage]={score,ok};
+ $("score").textContent=score;
+ let body=`Stage ${stage} score: <b>${score}/100</b><br>${ok} of 50 verses solved.`;
+ const a=results[1],b=results[2];
+ if(a&&b)body+=`<br><br>Total for both stages: <b>${a.score+b.score}/200</b>`;
+ const btns=stage==1?[["Continue to Stage 2",()=>start(2),"main"],["Replay Stage 1",()=>start(1),"gold"]]:[["Replay Stage 2",()=>start(2),"main"],["Play Stage 1 again",()=>start(1),"gold"]];
+ showOv(title,body,btns)}
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);$("check").onclick=check;
+$("undo").onclick=()=>{getVS(idx).placed.pop();render()};
+$("reset").onclick=()=>{getVS(idx).placed=[];render()};
+list=S1;status=["p"];vs=[];
+intro();
+</script>
 </body>
 </html>
